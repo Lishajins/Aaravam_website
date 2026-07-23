@@ -1,11 +1,10 @@
 // src/pages/AdminDashboard.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authStore, eventsStore, scoresStore, winnersStore } from '../data/store';
-import { useTeams, useEvents, useScores, useWinners, useAchievers } from '../hooks/useStore';
+import { authStore } from '../data/store';
+import { useTeams, useEvents, useScores, useWinners, useAchievers, type Event, type Achiever } from '../hooks/useStore';
 import { LogOut, Plus, Trash2, Save, Calendar, Table2, Trophy, Star } from 'lucide-react';
 import agastyaLogo from '../assets/logo-agastya.jpg';
-import type { Event, Achiever } from '../data/store';
 
 type Tab = 'events' | 'scores' | 'winners' | 'achievers';
 
@@ -44,9 +43,9 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const { teams } = useTeams();
-  const { events, add: addEvent, remove: removeEvent, refresh: refreshEvents } = useEvents();
-  const { upsert: upsertScore, refresh: refreshScores } = useScores();
-  const { upsert: upsertWinner } = useWinners();
+  const { events, add: addEvent, remove: removeEvent } = useEvents();
+  const { scores, upsert: upsertScore, clear: clearScores } = useScores();
+  const { winners, upsert: upsertWinner, remove: removeWinner } = useWinners();
   const { achievers, upsert: upsertAchiever, remove: removeAchiever } = useAchievers();
 
   function logout() { authStore.logout(); navigate('/admin'); }
@@ -69,7 +68,8 @@ export default function AdminDashboard() {
   function loadScores(evId: string) {
     setSelEvent(evId);
     const m: Record<string, string> = {};
-    for (const s of scoresStore.byEvent(evId)) m[s.teamId] = String(s.points);
+    const evScores = scores.filter(s => s.eventId === evId);
+    for (const s of evScores) m[s.teamId] = String(s.points);
     setPtsMap(m);
   }
   function saveScores() {
@@ -77,7 +77,15 @@ export default function AdminDashboard() {
       const n = parseInt(p, 10);
       if (!isNaN(n) && n >= 0) upsertScore(selEvent, tid, n);
     }
-    refreshScores(); setScMsg('✓ Scores saved'); setTimeout(() => setScMsg(''), 2500);
+    setScMsg('✓ Scores saved'); setTimeout(() => setScMsg(''), 2500);
+  }
+  function handleClearScores() {
+    if (!selEvent) return;
+    if (confirm("Are you sure you want to clear all scores for this event?")) {
+      clearScores(selEvent);
+      setPtsMap({});
+      setScMsg('✓ Scores cleared'); setTimeout(() => setScMsg(''), 2500);
+    }
   }
 
   // ── Winners
@@ -86,12 +94,20 @@ export default function AdminDashboard() {
   const [winMsg, setWinMsg] = useState('');
   function loadWinner(evId: string) {
     setWinEv(evId);
-    const w = winnersStore.byEvent(evId);
+    const w = winners.find(w => w.eventId === evId);
     setWinData({ firstPlace: w?.firstPlace ?? '', secondPlace: w?.secondPlace ?? '', thirdPlace: w?.thirdPlace ?? '' });
   }
   function saveWinner() {
     if (!winEv) return;
     upsertWinner(winEv, winData); setWinMsg('✓ Winners saved'); setTimeout(() => setWinMsg(''), 2500);
+  }
+  function handleClearWinner() {
+    if (!winEv) return;
+    if (confirm("Are you sure you want to clear the winners for this event?")) {
+      removeWinner(winEv);
+      setWinData({ firstPlace: '', secondPlace: '', thirdPlace: '' });
+      setWinMsg('✓ Winners cleared'); setTimeout(() => setWinMsg(''), 2500);
+    }
   }
 
   // ── Achievers
@@ -226,6 +242,7 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <button onClick={saveScores} style={BTN}><Save size={14} />Save Scores</button>
+                  <button onClick={handleClearScores} style={{ ...BTN, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#EF4444' }}><Trash2 size={14} />Clear Scores</button>
                   {scMsg && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#4ADE80' }}>{scMsg}</span>}
                 </div>
               </>)}
@@ -254,6 +271,7 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <button onClick={saveWinner} style={BTN}><Save size={14} />Save Winners</button>
+                  <button onClick={handleClearWinner} style={{ ...BTN, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#EF4444' }}><Trash2 size={14} />Clear Winners</button>
                   {winMsg && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#4ADE80' }}>{winMsg}</span>}
                 </div>
               </>)}

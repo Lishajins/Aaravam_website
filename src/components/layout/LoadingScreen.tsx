@@ -6,21 +6,22 @@ interface Props {
 }
 
 export default function LoadingScreen({ onComplete }: Props) {
-  const [phase, setPhase] = useState<'enter' | 'hold' | 'exit'>('enter');
-  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<'enter' | 'exit'>('enter');
+  const [dots, setDots] = useState('.');
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress(p => Math.min(p + 4, 100));
-    }, 35);
+    const dotsInterval = setInterval(() => {
+      setDots(d => {
+        if (d === '...') return '.';
+        return d + '.';
+      });
+    }, 500);
 
-    const holdTimer = setTimeout(() => setPhase('hold'), 400);
-    const exitTimer = setTimeout(() => setPhase('exit'), 1400);
-    const doneTimer = setTimeout(() => onComplete(), 2000);
+    const exitTimer = setTimeout(() => setPhase('exit'), 2800);
+    const doneTimer = setTimeout(() => onComplete(), 3400);
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(holdTimer);
+      clearInterval(dotsInterval);
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
     };
@@ -28,111 +29,86 @@ export default function LoadingScreen({ onComplete }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[999] flex flex-col items-center justify-center"
       style={{
-        background: 'radial-gradient(ellipse at center bottom, #5C1808 0%, #1F160D 40%, #0A0704 80%)',
+        position: 'fixed',
+        inset: 0,
+        zIndex: 999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'radial-gradient(ellipse at center bottom, #300d05 0%, #150d09 50%, #060403 100%)',
         opacity: phase === 'exit' ? 0 : 1,
         transition: 'opacity 0.6s ease',
         pointerEvents: phase === 'exit' ? 'none' : 'all',
       }}
     >
-      {/* Ember particles rising */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(18)].map((_, i) => (
+      {/* Cinematic slow rising ember particles */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full"
             style={{
-              width: `${2 + (i % 3)}px`,
-              height: `${2 + (i % 3)}px`,
-              left: `${5 + i * 5}%`,
-              bottom: `${5 + (i % 4) * 5}%`,
-              background: i % 3 === 0 ? '#F2601E' : i % 3 === 1 ? '#C9A227' : '#C7391A',
-              animation: `riseAndFade ${2 + (i % 3)}s ease-out infinite`,
-              animationDelay: `${(i * 0.2) % 2}s`,
-              opacity: 0.8,
+              position: 'absolute',
+              borderRadius: '50%',
+              width: `${1.5 + (i % 3)}px`,
+              height: `${1.5 + (i % 3)}px`,
+              left: `${10 + i * 6}%`,
+              bottom: `${10 + (i % 4) * 8}%`,
+              background: i % 2 === 0 ? '#F2601E' : '#C9A227',
+              animation: `riseAndFade 4s ease-out infinite`,
+              animationDelay: `${(i * 0.3) % 4}s`,
+              opacity: 0.5,
             }}
           />
         ))}
       </div>
 
-      {/* Central flame icon */}
+      {/* Quote Container */}
       <div
-        className="relative flex flex-col items-center gap-6"
         style={{
-          opacity: phase === 'enter' ? 0 : 1,
-          transform: phase === 'enter' ? 'scale(0.8) translateY(16px)' : 'scale(1) translateY(0)',
-          transition: 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          maxWidth: '576px',
+          padding: '0 24px',
+          textAlign: 'center',
+          gap: '24px',
+          transform: phase === 'exit' ? 'scale(0.98) translateY(-10px)' : 'scale(1) translateY(0)',
+          transition: 'transform 0.6s ease',
         }}
       >
-        {/* Flame SVG */}
-        <div className="animate-float" style={{ filter: 'drop-shadow(0 0 24px rgba(242,96,30,0.9))' }}>
-          <svg width="64" height="80" viewBox="0 0 64 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M32 4C32 4 52 24 52 44C52 55.046 43.046 64 32 64C20.954 64 12 55.046 12 44C12 24 32 4Z"
-              fill="url(#flameFill)"
-              opacity="0.9"
-            />
-            <path
-              d="M32 20C32 20 44 34 44 46C44 52.627 38.627 58 32 58C25.373 58 20 52.627 20 46C20 34 32 20Z"
-              fill="url(#flameInner)"
-            />
-            <path
-              d="M32 34C32 34 38 42 38 48C38 51.314 35.314 54 32 54C28.686 54 26 51.314 26 48C26 42 32 34Z"
-              fill="#FDE68A"
-              opacity="0.8"
-            />
-            <defs>
-              <linearGradient id="flameFill" x1="32" y1="4" x2="32" y2="64" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#C9A227" />
-                <stop offset="0.5" stopColor="#F2601E" />
-                <stop offset="1" stopColor="#C7391A" />
-              </linearGradient>
-              <linearGradient id="flameInner" x1="32" y1="20" x2="32" y2="58" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#FDE68A" />
-                <stop offset="1" stopColor="#F2601E" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Malayalam + English title */}
-        <div className="text-center">
-          <p
-            className="font-display text-5xl font-bold tracking-widest"
-            style={{
-              background: 'linear-gradient(135deg, #C9A227 0%, #F0C040 50%, #F2601E 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textShadow: 'none',
-              filter: 'drop-shadow(0 0 16px rgba(201,162,39,0.6))',
-            }}
-          >
-            ആരവം
-          </p>
-          <p className="font-display text-sm tracking-[0.5em] uppercase text-gold/70 mt-1">
-            AARAVAM
-          </p>
-          <p className="font-body text-[11px] tracking-[0.3em] uppercase text-text-muted mt-2">
-            2025 – 2026 · Interbatch Arts Festival
-          </p>
-        </div>
-
-        {/* Divider line */}
-        <div className="w-24 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
-
-        <p className="font-display text-[10px] tracking-[0.4em] uppercase text-gold/50">
-          Agastya Students' Union · KAU Vellayani
+        {/* Quote itself */}
+        <p
+          style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '18px',
+            lineHeight: '1.8',
+            letterSpacing: '0.15em',
+            color: '#EAD39E',
+            textShadow: '0 0 12px rgba(201,162,39,0.3)',
+            margin: 0,
+            fontStyle: 'italic',
+          }}
+        >
+          "Let the stage speak, Let the talents roar"
         </p>
-      </div>
 
-      {/* Progress bar */}
-      <div className="absolute bottom-12 w-48 h-px bg-white/10 overflow-hidden">
+        {/* Cycling Dots */}
         <div
-          className="h-full bg-gradient-to-r from-ember-deep via-ember-bright to-gold"
-          style={{ width: `${progress}%`, transition: 'width 0.035s linear' }}
-        />
+          style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '24px',
+            color: '#F2601E',
+            letterSpacing: '0.2em',
+            height: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {dots}
+        </div>
       </div>
     </div>
   );
