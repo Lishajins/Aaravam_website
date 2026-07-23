@@ -287,11 +287,14 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16, marginBottom: 16 }}>
                 <div>
                   <label style={LABEL}>Title</label>
-                  <select style={INPUT} value={acForm.title} onChange={e => setAcForm(p => ({ ...p, title: e.target.value }))}>
-                    <option value="">— Select Title —</option>
-                    {TITLES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <input
+                    style={INPUT}
+                    value={acForm.title}
+                    onChange={e => setAcForm(p => ({ ...p, title: e.target.value }))}
+                    placeholder="e.g. Best Actor"
+                  />
                 </div>
+
                 <div><label style={LABEL}>Name</label><input style={INPUT} value={acForm.name} onChange={e => setAcForm(p => ({ ...p, name: e.target.value }))} placeholder="Winner's full name" /></div>
                 <div><label style={LABEL}>Points</label><input type="number" min={0} style={INPUT} value={acForm.points} onChange={e => setAcForm(p => ({ ...p, points: parseInt(e.target.value) || 0 }))} /></div>
                 <div><label style={LABEL}>Photo URL (optional)</label><input style={INPUT} value={acForm.photoUrl ?? ''} onChange={e => setAcForm(p => ({ ...p, photoUrl: e.target.value }))} placeholder="https://..." /></div>

@@ -137,6 +137,26 @@ export default function AdminLogin() {
             ) : <ShieldCheck size={16} />}
             {loading ? 'Verifying...' : 'Enter Dashboard'}
           </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            style={{
+              marginTop: 16,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              color: '#7A6E58',
+              textDecoration: 'underline'
+            }}
+          >
+            ← Back to Home Page
+          </button>
+
+
+
         </form>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
