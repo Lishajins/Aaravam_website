@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global keyframes for inline style animations */
+@keyframes riseAndFade {
+  0%   { transform: translateY(0) scale(1);    opacity: 0.8; }
+  100% { transform: translateY(-80px) scale(0.3); opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(201,162,39,0.6)); }
+  50%       { filter: drop-shadow(0 0 20px rgba(201,162,39,1)); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg-base text-text-primary font-body;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #0A0704;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(92, 24, 8, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(92, 24, 8, 0.10) 0%, transparent 50%);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0A0704;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #5C1808;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C7391A;
+  }
+
+  ::selection {
+    background-color: rgba(199, 57, 26, 0.4);
+    color: #F5EFE0;
+  }
+}
+
+@layer components {
+  .ember-btn {
+    @apply px-6 py-3 bg-ember text-text-primary font-display font-semibold rounded-sm tracking-widest uppercase text-sm 
+           transition-all duration-300 cursor-pointer border border-ember
+           hover:bg-ember-bright hover:shadow-ember-lg hover:scale-105 active:scale-95;
+  }
+
+  .gold-btn {
+    @apply px-6 py-3 bg-transparent text-gold font-display font-semibold rounded-sm tracking-widest uppercase text-sm 
+           transition-all duration-300 cursor-pointer border border-gold
+           hover:bg-gold hover:text-bg-base hover:shadow-gold hover:scale-105 active:scale-95;
+  }
+
+  .card {
+    @apply bg-bg-raised border border-gold/10 rounded-sm shadow-card
+           transition-all duration-300 hover:border-gold/30;
+  }
+
+  .section-title {
+    @apply font-display text-3xl md:text-4xl font-bold text-text-primary tracking-widest uppercase;
+    text-shadow: 0 0 40px rgba(201, 162, 39, 0.3);
+  }
+
+  .section-divider {
+    @apply w-24 h-px bg-gradient-to-r from-transparent via-gold to-transparent mx-auto my-4;
+  }
+
+  .nav-link {
+    @apply font-display text-text-secondary tracking-widest uppercase text-sm transition-all duration-300
+           hover:text-ember-bright relative py-2;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-ember-bright transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .nav-link.active {
+    @apply text-ember-bright;
+  }
+
+  .nav-link.active::after {
+    @apply w-full;
+  }
+
+  .badge-gold {
+    @apply inline-flex items-center gap-1 px-3 py-1 text-xs font-display font-semibold tracking-widest uppercase
+           bg-gold/10 text-gold border border-gold/30 rounded-full;
+  }
+
+  .badge-ember {
+    @apply inline-flex items-center gap-1 px-3 py-1 text-xs font-display font-semibold tracking-widest uppercase
+           bg-ember/10 text-ember-bright border border-ember/30 rounded-full;
+  }
+
+  .rank-badge-1 {
+    @apply w-8 h-8 flex items-center justify-center rounded-full bg-gold text-bg-base font-display font-bold text-sm shadow-gold;
+  }
+
+  .rank-badge-2 {
+    @apply w-8 h-8 flex items-center justify-center rounded-full bg-text-secondary text-bg-base font-display font-bold text-sm;
+  }
+
+  .rank-badge-3 {
+    @apply w-8 h-8 flex items-center justify-center rounded-full font-display font-bold text-sm;
+    background: linear-gradient(135deg, #CD7F32, #A0522D);
+    color: #fff;
+  }
+
+  .table-header {
+    @apply font-display text-xs tracking-widest uppercase text-text-muted border-b border-gold/20;
+  }
+
+  .table-cell {
+    @apply py-4 px-4 text-text-secondary text-sm border-b border-white/5;
+  }
+
+  .table-row {
+    @apply transition-all duration-200 hover:bg-white/[0.03];
+  }
+
+  .flame-particle {
+    @apply absolute pointer-events-none;
+    animation: riseAndFade 3s ease-out infinite;
+  }
+}
+
+@layer utilities {
+  .text-glow-gold {
+    text-shadow: 0 0 20px rgba(201, 162, 39, 0.8), 0 0 40px rgba(201, 162, 39, 0.4);
+  }
+
+  .text-glow-ember {
+    text-shadow: 0 0 20px rgba(242, 96, 30, 0.8), 0 0 40px rgba(242, 96, 30, 0.4);
+  }
+
+  .border-glow-ember {
+    box-shadow: 0 0 0 1px rgba(199, 57, 26, 0.5), 0 0 20px rgba(199, 57, 26, 0.3);
+  }
+
+  .glass {
+    background: rgba(22, 16, 9, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+/* Ember fire particles */
+@keyframes riseAndFade {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Loading shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.0) 0%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0.0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
